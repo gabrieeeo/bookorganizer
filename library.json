@@ -5,8 +5,9 @@
     "autor": "teste",
     "ano": 1,
     "categoria": "teste",
-    "filePath": "C:\\Users\\Suporte-MailaCosméti\\Downloads\\Java Como Programar (Paul Deitel Harvey Deitel) (z-lib.org).pdf",
-    "paginaAtual": 15,
+    "inicio": "2025-11-24",
+    "filePath": "C:\\Users\\Suporte-MailaCosméti\\Downloads\\java como programar livro.pdf",
+    "paginaAtual": 0,
     "totalPages": 1180
   }
 ]

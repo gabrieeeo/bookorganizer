@@ -79,7 +79,7 @@ public class MainFrame extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         // === Área Central (Lista de Livros) ===
-        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Página", "Total de Páginas" };
+        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Início", "Página", "Total de Páginas" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -110,7 +110,7 @@ public class MainFrame extends JFrame {
 
     public void addBookToView(BookModel book) {
         Object[] rowData = { book.getStatus(), book.getTitulo(), book.getAutor(), book.getAno(), book.getCategoria(),
-                book.getPaginaAtual(), book.getTotalPages() };
+                book.getInicio(), book.getPaginaAtual() + 1, book.getTotalPages() };
         tableModel.addRow(rowData);
     }
 

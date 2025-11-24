@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import me.gabriel.adapter.LocalDateAdapter;
 import me.gabriel.model.BookModel;
 import me.gabriel.model.Status;
 import me.gabriel.view.BookFormDialog;
@@ -33,16 +35,23 @@ public class LibraryController {
     private final MainFrame view;
     private List<BookModel> books;
     private static final String SAVE_FILE = "library.json";
+    private final Gson gson;
 
     public LibraryController(MainFrame view) {
         this.view = view;
+        
+        // Configura a instância do Gson com o adaptador para LocalDate
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .setPrettyPrinting()
+                .create();
+
         this.books = loadLibrary();
         this.view.setController(this); // Conecta a View ao Controller
         this.view.displayBooks(this.books); // Pede para a view exibir os livros carregados
     }
 
     private void saveLibrary() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try (FileWriter writer = new FileWriter(SAVE_FILE)) {
             gson.toJson(books, writer);
         } catch (IOException e) {
@@ -58,7 +67,7 @@ public class LibraryController {
         try (FileReader reader = new FileReader(file)) {
             Type bookListType = new TypeToken<ArrayList<BookModel>>() {
             }.getType();
-            List<BookModel> loadedBooks = new Gson().fromJson(reader, bookListType);
+            List<BookModel> loadedBooks = gson.fromJson(reader, bookListType);
             return loadedBooks != null ? loadedBooks : new ArrayList<>();
         } catch (IOException e) {
             return new ArrayList<>(); // Retorna lista vazia se o arquivo não existe ou está corrompido
