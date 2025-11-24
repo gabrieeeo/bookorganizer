@@ -1,6 +1,9 @@
 package me.gabriel.view;
 
 import javax.swing.*;
+
+import me.gabriel.model.Status;
+
 import java.awt.*;
 
 public class BookFormDialog extends JDialog {
@@ -68,6 +71,10 @@ public class BookFormDialog extends JDialog {
 
     public boolean isSubmitted() {
         return submitted;
+    }
+
+    public Status getStatus() {
+        return Status.LENDO; // Default status for new books
     }
 
     public String getTitulo() {

@@ -3,6 +3,7 @@ package me.gabriel.model;
 import java.io.File;
 
 public class BookModel {
+    private Status status = Status.LENDO;
     private String titulo;
     private String autor;
     private int ano;
@@ -10,7 +11,8 @@ public class BookModel {
     private File filePath;
     private int paginaAtual;
 
-    public BookModel(String titulo, String autor, int ano, String categoria, File filePath) {
+    public BookModel(Status status, String titulo, String autor, int ano, String categoria, File filePath) {
+        this.status = status;
         this.titulo = titulo;
         this.autor = autor;
         this.ano = ano;
@@ -19,6 +21,7 @@ public class BookModel {
         this.paginaAtual = 0;
     }
 
+    public Status getStatus() { return status; }
     public String getTitulo() { return titulo; }
     public String getAutor() { return autor; }
     public int getAno() { return ano; }
@@ -27,6 +30,7 @@ public class BookModel {
     
     public int getPaginaAtual() { return paginaAtual; }
     public void setPaginaAtual(int paginaAtual) { this.paginaAtual = paginaAtual; }
+    public void setStatus(Status status) { this.status = status; }
 
     @Override
     public String toString() {

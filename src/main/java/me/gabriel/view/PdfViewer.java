@@ -1,5 +1,6 @@
 package me.gabriel.view;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.ImageType;
@@ -25,6 +26,9 @@ public class PdfViewer extends JFrame {
     private JList<Integer> thumbnailList;
     private DefaultListModel<Integer> listModel;
     private final java.util.Map<Integer, ImageIcon> thumbnailCache = new java.util.concurrent.ConcurrentHashMap<>();
+    
+    // Controle de thread
+    private volatile boolean isClosed = false;
 
     // Controles de visualização
     private float zoomFactor = 1.35f;
@@ -36,20 +40,19 @@ public class PdfViewer extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         try {
-            document = PDDocument.load(pdfFile);
+            document = Loader.loadPDF(pdfFile);
 
             // Custom Renderer para forçar anti-aliasing máximo na fonte
             renderer = new PDFRenderer(document) {
                 @Override
                 protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException {
                     return new PageDrawer(parameters) {
-                        @Override
-                        public void drawPage(Graphics g, PDRectangle pageSize) throws IOException {
+                        public void drawPage(Graphics2D g, PDRectangle pageSize) throws IOException {
                             Graphics2D g2d = (Graphics2D) g;
-                            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+                            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                            g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
                             super.drawPage(g, pageSize);
                         }
                     };
@@ -75,6 +78,7 @@ public class PdfViewer extends JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                isClosed = true; // Sinaliza que a janela está fechando
                 try {
                     if (document != null)
                         document.close();
@@ -87,6 +91,8 @@ public class PdfViewer extends JFrame {
     
     private void loadThumbnails() {
         for (int i = 0; i < document.getNumberOfPages(); i++) {
+            if (isClosed) return; // Interrompe se a janela foi fechada
+            
             try {
                 // Renderiza thumbnail pequena (largura ~100px)
                 BufferedImage thumb = renderer.renderImageWithDPI(i, 30); // 30 DPI é suficiente para thumbnail
@@ -96,13 +102,14 @@ public class PdfViewer extends JFrame {
                 thumbnailCache.put(i, new ImageIcon(scaled));
                 
                 // Atualiza a lista na UI thread a cada 5 páginas para não travar
-                if (i % 5 == 0) SwingUtilities.invokeLater(() -> thumbnailList.repaint());
+                if (i % 5 == 0 && !isClosed) SwingUtilities.invokeLater(() -> thumbnailList.repaint());
                 
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                // Se o erro for porque o documento fechou, apenas ignora
+                if (!isClosed) e.printStackTrace();
             }
         }
-        SwingUtilities.invokeLater(() -> thumbnailList.repaint());
+        if (!isClosed) SwingUtilities.invokeLater(() -> thumbnailList.repaint());
     }
 
     public int getCurrentPage() {
@@ -241,23 +248,21 @@ public class PdfViewer extends JFrame {
 
         // 1. Renderiza o PDF com alta resolução (4x DPI)
         float screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        float renderScale = 2.0f;
+        float renderScale = 4.0f; // Aumentado para 4x para máxima qualidade
         BufferedImage highResImage = renderer.renderImageWithDPI(index, screenDpi * renderScale, ImageType.RGB);
 
         // 2. Calcula o tamanho final
         int displayWidth = (int) (highResImage.getWidth() / renderScale * zoomFactor);
         int displayHeight = (int) (highResImage.getHeight() / renderScale * zoomFactor);
 
-        // 3. Redimensiona usando Area Averaging (Melhor algoritmo para redução de
-        // texto)
-        // Nota: getScaledInstance é mais lento que Graphics2D, mas a qualidade é
-        // superior para texto.
+        // 3. Redimensiona usando Area Averaging (Melhor algoritmo para redução de texto)
+        // Nota: getScaledInstance é mais lento que Graphics2D, mas a qualidade é superior para texto.
         Image scaledImage = highResImage.getScaledInstance(displayWidth, displayHeight, Image.SCALE_AREA_AVERAGING);
 
         // 4. Converte de volta para BufferedImage para exibir no JLabel
         BufferedImage finalImage = new BufferedImage(displayWidth, displayHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = finalImage.createGraphics();
-        g2d.drawImage(scaledImage, -1, -1, null);
+        g2d.drawImage(scaledImage, 0, 0, null);
         g2d.dispose();
 
         return finalImage;

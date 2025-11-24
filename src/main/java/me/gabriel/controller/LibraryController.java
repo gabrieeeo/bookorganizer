@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import me.gabriel.model.BookModel;
+import me.gabriel.model.Status;
 import me.gabriel.view.BookFormDialog;
 import me.gabriel.view.MainFrame;
 import me.gabriel.view.PdfViewer;
@@ -39,6 +40,7 @@ public class LibraryController {
 
             if (dialog.isSubmitted()) {
                 BookModel newBook = new BookModel(
+                    dialog.getStatus(),
                     dialog.getTitulo(),
                     dialog.getAutor(),
                     dialog.getAno(),
@@ -77,6 +79,14 @@ public class LibraryController {
             } else {
                 JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + file.getAbsolutePath());
             }
+        }
+    }
+
+    public void updateBookStatus(int index, Status newStatus) {
+        if (index >= 0 && index < books.size()) {
+            BookModel book = books.get(index);
+            book.setStatus(newStatus);
+            System.out.println("Status atualizado para: " + newStatus.getDescricao());
         }
     }
 }
