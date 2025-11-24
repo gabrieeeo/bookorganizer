@@ -39,12 +39,11 @@ public class LibraryController {
 
             if (dialog.isSubmitted()) {
                 BookModel newBook = new BookModel(
-                    dialog.getTitulo(), 
-                    dialog.getAutor(), 
-                    dialog.getAno(), 
-                    dialog.getCategoria(), 
-                    fileToSave, 
-                    0 // Total de páginas (placeholder)
+                    dialog.getTitulo(),
+                    dialog.getAutor(),
+                    dialog.getAno(),
+                    dialog.getCategoria(),
+                    fileToSave
                 );
                 
                 books.add(newBook);
@@ -59,11 +58,21 @@ public class LibraryController {
     public void openBook(int index) {
         if (index >= 0 && index < books.size()) {
             BookModel book =  books.get(index);
-            File file = book.filePath();
+            File file = book.getFilePath();
             
             if (file.exists()) {
-                // Abre o visualizador interno
-                PdfViewer viewer = new PdfViewer(file);
+                // Abre o visualizador interno passando a página salva
+                PdfViewer viewer = new PdfViewer(file, book.getPaginaAtual());
+                
+                // Salva a página quando fechar
+                viewer.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                        book.setPaginaAtual(viewer.getCurrentPage());
+                        System.out.println("Progresso salvo: Página " + book.getPaginaAtual());
+                    }
+                });
+                
                 viewer.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + file.getAbsolutePath());

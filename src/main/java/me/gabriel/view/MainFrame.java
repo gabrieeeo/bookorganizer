@@ -73,7 +73,7 @@ public class MainFrame extends JFrame{
     }
 
     public void addBookToView(BookModel book) {
-        Object[] rowData = {book.titulo(), book.autor(), book.ano(), book.categoria()};
+        Object[] rowData = {book.getTitulo(), book.getAutor(), book.getAno(), book.getCategoria()};
         tableModel.addRow(rowData);
     }
 
