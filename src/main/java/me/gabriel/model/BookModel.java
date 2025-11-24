@@ -1,6 +1,10 @@
 package me.gabriel.model;
 
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class BookModel {
     private Status status = Status.LENDO;
@@ -27,10 +31,21 @@ public class BookModel {
     public int getAno() { return ano; }
     public String getCategoria() { return categoria; }
     public File getFilePath() { return filePath; }
-    
     public int getPaginaAtual() { return paginaAtual; }
+
+    public int getTotalPages() {
+        try (PDDocument document = Loader.loadPDF(filePath)) {
+            return document.getNumberOfPages();
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo PDF: " + e.getMessage());
+            return -1; // Retorna -1 para indicar um erro
+        }
+    }
+
     public void setPaginaAtual(int paginaAtual) { this.paginaAtual = paginaAtual; }
     public void setStatus(Status status) { this.status = status; }
+
+    
 
     @Override
     public String toString() {

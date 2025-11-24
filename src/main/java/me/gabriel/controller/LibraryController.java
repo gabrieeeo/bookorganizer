@@ -33,24 +33,23 @@ public class LibraryController {
 
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
-            
+
             // Abre o modal para preencher os dados
             BookFormDialog dialog = new BookFormDialog(view);
             dialog.setVisible(true);
 
             if (dialog.isSubmitted()) {
                 BookModel newBook = new BookModel(
-                    dialog.getStatus(),
-                    dialog.getTitulo(),
-                    dialog.getAutor(),
-                    dialog.getAno(),
-                    dialog.getCategoria(),
-                    fileToSave
-                );
-                
+                        dialog.getStatus(),
+                        dialog.getTitulo(),
+                        dialog.getAutor(),
+                        dialog.getAno(),
+                        dialog.getCategoria(),
+                        fileToSave);
+
                 books.add(newBook);
                 System.out.println("Livro importado: " + newBook);
-                
+
                 // Atualiza a tela
                 view.addBookToView(newBook);
             }
@@ -59,13 +58,13 @@ public class LibraryController {
 
     public void openBook(int index) {
         if (index >= 0 && index < books.size()) {
-            BookModel book =  books.get(index);
+            BookModel book = books.get(index);
             File file = book.getFilePath();
-            
+
             if (file.exists()) {
                 // Abre o visualizador interno passando a página salva
                 PdfViewer viewer = new PdfViewer(file, book.getPaginaAtual());
-                
+
                 // Salva a página quando fechar
                 viewer.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
@@ -74,13 +73,15 @@ public class LibraryController {
                         System.out.println("Progresso salvo: Página " + book.getPaginaAtual());
                     }
                 });
-                
+
                 viewer.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + file.getAbsolutePath());
             }
         }
     }
+
+    
 
     public void updateBookStatus(int index, Status newStatus) {
         if (index >= 0 && index < books.size()) {
