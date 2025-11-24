@@ -16,8 +16,9 @@ import me.gabriel.model.BookModel;
 import me.gabriel.model.Status;
 
 import java.awt.BorderLayout;
+import java.util.List;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
 
     private LibraryController controller;
     private DefaultTableModel tableModel;
@@ -49,16 +50,18 @@ public class MainFrame extends JFrame{
         JButton btnAdd = new JButton("Adicionar PDF");
         JButton btnRead = new JButton("Ler Selecionado");
         JButton btnDashboardButton = new JButton("Dashboard");
-        
+
         // Ações dos botões (chamando o Controller)
         btnAdd.addActionListener(e -> {
-            if (controller != null) controller.importBook();
+            if (controller != null)
+                controller.importBook();
         });
-        
+
         btnRead.addActionListener(e -> {
             int selectedRow = bookTable.getSelectedRow();
             if (selectedRow != -1) {
-                if (controller != null) controller.openBook(selectedRow);
+                if (controller != null)
+                    controller.openBook(selectedRow);
             } else {
                 JOptionPane.showMessageDialog(this, "Selecione um livro na tabela para ler.");
             }
@@ -70,7 +73,7 @@ public class MainFrame extends JFrame{
         add(toolBar, BorderLayout.NORTH);
 
         // === Área Central (Lista de Livros) ===
-        String[] columnNames = {"Status", "Título", "Autor", "Ano", "Categoria", "Página", "Total de Páginas"};
+        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Página", "Total de Páginas" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -78,7 +81,7 @@ public class MainFrame extends JFrame{
             }
         };
         bookTable = new JTable(tableModel);
-        
+
         // Configura o ComboBox para a coluna Status
         JComboBox<Status> statusComboBox = new JComboBox<>(Status.values());
         TableColumn statusColumn = bookTable.getColumnModel().getColumn(0);
@@ -100,8 +103,22 @@ public class MainFrame extends JFrame{
     }
 
     public void addBookToView(BookModel book) {
-        Object[] rowData = {book.getStatus(), book.getTitulo(), book.getAutor(), book.getAno(), book.getCategoria(), book.getPaginaAtual(), book.getTotalPages()};
+        Object[] rowData = { book.getStatus(), book.getTitulo(), book.getAutor(), book.getAno(), book.getCategoria(),
+                book.getPaginaAtual(), book.getTotalPages() };
         tableModel.addRow(rowData);
+    }
+
+    /**
+     * Limpa a tabela e a preenche com a lista de livros fornecida.
+     * @param books A lista de livros a ser exibida.
+     */
+    public void displayBooks(List<BookModel> books) {
+        // Limpa a tabela antes de adicionar os novos dados
+        tableModel.setRowCount(0);
+        
+        for (BookModel book : books) {
+            addBookToView(book);
+        }
     }
 
 }

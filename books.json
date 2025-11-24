@@ -1,0 +1,22 @@
+[
+  {
+    "status": "LENDO",
+    "titulo": "teste",
+    "autor": "teste",
+    "ano": 1,
+    "categoria": "teste",
+    "filePath": "C:\\Users\\Suporte-MailaCosméti\\Downloads\\Java Como Programar (Paul Deitel Harvey Deitel) (z-lib.org).pdf",
+    "paginaAtual": 0,
+    "totalPages": 1180
+  },
+  {
+    "status": "LENDO",
+    "titulo": "a",
+    "autor": "a",
+    "ano": 1,
+    "categoria": "a",
+    "filePath": "C:\\Users\\Suporte-MailaCosméti\\Downloads\\Java Como Programar (Paul Deitel Harvey Deitel) (z-lib.org).pdf",
+    "paginaAtual": 0,
+    "totalPages": 1180
+  }
+]

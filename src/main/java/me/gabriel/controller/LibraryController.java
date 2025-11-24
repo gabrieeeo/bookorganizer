@@ -1,12 +1,23 @@
 package me.gabriel.controller;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import me.gabriel.model.BookModel;
 import me.gabriel.model.Status;
@@ -17,11 +28,38 @@ import me.gabriel.view.PdfViewer;
 public class LibraryController {
 
     private final MainFrame view;
-    private final List<BookModel> books = new ArrayList<>();
+    private List<BookModel> books;
+    private static final String SAVE_FILE = "library.json";
 
     public LibraryController(MainFrame view) {
         this.view = view;
+        this.books = loadLibrary();
         this.view.setController(this); // Conecta a View ao Controller
+        this.view.displayBooks(this.books); // Pede para a view exibir os livros carregados
+    }
+
+    private void saveLibrary() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(SAVE_FILE)) {
+            gson.toJson(books, writer);
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar a biblioteca: " + e.getMessage());
+        }
+    }
+
+    private List<BookModel> loadLibrary() {
+        File file = new File(SAVE_FILE);
+        if (!file.exists()) {
+            return new ArrayList<>();
+        }
+        try (FileReader reader = new FileReader(file)) {
+            Type bookListType = new TypeToken<ArrayList<BookModel>>() {
+            }.getType();
+            List<BookModel> loadedBooks = new Gson().fromJson(reader, bookListType);
+            return loadedBooks != null ? loadedBooks : new ArrayList<>();
+        } catch (IOException e) {
+            return new ArrayList<>(); // Retorna lista vazia se o arquivo não existe ou está corrompido
+        }
     }
 
     public void importBook() {
@@ -47,13 +85,21 @@ public class LibraryController {
                         dialog.getCategoria(),
                         fileToSave);
 
+                try (PDDocument document = Loader.loadPDF(fileToSave)) {
+                    newBook.setTotalPages(document.getNumberOfPages());
+                } catch (IOException e) {
+                    System.err.println("Erro ao ler o arquivo PDF: " + e.getMessage());
+                }
+
                 books.add(newBook);
                 System.out.println("Livro importado: " + newBook);
 
                 // Atualiza a tela
                 view.addBookToView(newBook);
+                saveLibrary();
             }
         }
+
     }
 
     public void openBook(int index) {
@@ -61,7 +107,7 @@ public class LibraryController {
             BookModel book = books.get(index);
             File file = book.getFilePath();
 
-            if (file.exists()) {
+            if (file != null && file.exists()) {
                 // Abre o visualizador interno passando a página salva
                 PdfViewer viewer = new PdfViewer(file, book.getPaginaAtual());
 
@@ -71,23 +117,23 @@ public class LibraryController {
                     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                         book.setPaginaAtual(viewer.getCurrentPage());
                         System.out.println("Progresso salvo: Página " + book.getPaginaAtual());
+                        saveLibrary(); // SALVA O PROGRESSO
                     }
                 });
 
                 viewer.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + file.getAbsolutePath());
+                JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + (file != null ? file.getAbsolutePath() : "caminho nulo"));
             }
         }
     }
-
-    
 
     public void updateBookStatus(int index, Status newStatus) {
         if (index >= 0 && index < books.size()) {
             BookModel book = books.get(index);
             book.setStatus(newStatus);
             System.out.println("Status atualizado para: " + newStatus.getDescricao());
+            saveLibrary(); // SALVA A MUDANÇA DE STATUS
         }
     }
 }
