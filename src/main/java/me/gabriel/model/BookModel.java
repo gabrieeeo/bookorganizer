@@ -1,10 +1,6 @@
 package me.gabriel.model;
 
 import java.io.File;
-import java.io.IOException;
-
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class BookModel {
     private Status status = Status.LENDO;
@@ -35,7 +31,7 @@ public class BookModel {
     public String getAutor() { return autor; }
     public int getAno() { return ano; }
     public String getCategoria() { return categoria; }
-    public int getPaginaAtual() { return paginaAtual; }
+    public int getPaginaAtual() { return paginaAtual + 1; }
     public int getTotalPages() { return totalPages; }
 
     // O getter agora reconstrói o objeto File a partir do caminho

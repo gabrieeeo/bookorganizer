@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -22,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import me.gabriel.model.BookModel;
 import me.gabriel.model.Status;
 import me.gabriel.view.BookFormDialog;
+import me.gabriel.view.DashboardDialog;
 import me.gabriel.view.MainFrame;
 import me.gabriel.view.PdfViewer;
 
@@ -118,6 +121,7 @@ public class LibraryController {
                         book.setPaginaAtual(viewer.getCurrentPage());
                         System.out.println("Progresso salvo: Página " + book.getPaginaAtual());
                         saveLibrary(); // SALVA O PROGRESSO
+                        view.displayBooks(books); // ATUALIZA A TABELA PRINCIPAL
                     }
                 });
 
@@ -135,5 +139,15 @@ public class LibraryController {
             System.out.println("Status atualizado para: " + newStatus.getDescricao());
             saveLibrary(); // SALVA A MUDANÇA DE STATUS
         }
+    }
+
+    public void showDashboard() {
+        // Calcula as estatísticas usando Stream API
+        Map<Status, Long> stats = books.stream()
+                .collect(Collectors.groupingBy(BookModel::getStatus, Collectors.counting()));
+
+        // Cria e exibe o diálogo do dashboard
+        DashboardDialog dashboard = new DashboardDialog(view, stats);
+        dashboard.setVisible(true);
     }
 }

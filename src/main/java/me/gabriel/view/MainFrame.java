@@ -67,6 +67,12 @@ public class MainFrame extends JFrame {
             }
         });
 
+        btnDashboardButton.addActionListener(e -> {
+            if (controller != null) {
+                controller.showDashboard();
+            }
+        });
+
         toolBar.add(btnAdd);
         toolBar.add(btnRead);
         toolBar.add(btnDashboardButton);
