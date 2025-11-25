@@ -39,7 +39,7 @@ public class LibraryController {
 
     public LibraryController(MainFrame view) {
         this.view = view;
-        
+
         // Configura a instância do Gson com o adaptador para LocalDate
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -136,8 +136,18 @@ public class LibraryController {
 
                 viewer.setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(view, "Arquivo não encontrado: " + (file != null ? file.getAbsolutePath() : "caminho nulo"));
+                JOptionPane.showMessageDialog(view,
+                        "Arquivo não encontrado: " + (file != null ? file.getAbsolutePath() : "caminho nulo"));
             }
+        }
+    }
+
+    public void removeBook(int index) {
+        if (index >= 0 && index < books.size()) {
+            BookModel book = books.remove(index);
+            System.out.println("Livro removido: " + book);
+            saveLibrary(); // SALVA A MUDANÇA
+            view.displayBooks(books); // ATUALIZA A TELA
         }
     }
 
@@ -179,7 +189,7 @@ public class LibraryController {
 
         List<BookModel> filteredBooks = books.stream()
                 .filter(book -> (book.getTitulo() != null && book.getTitulo().toLowerCase().contains(lowerCaseQuery)) ||
-                               (book.getAutor() != null && book.getAutor().toLowerCase().contains(lowerCaseQuery)))
+                        (book.getAutor() != null && book.getAutor().toLowerCase().contains(lowerCaseQuery)))
                 .collect(Collectors.toList());
 
         view.displayBooks(filteredBooks);

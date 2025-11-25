@@ -53,6 +53,8 @@ public class MainFrame extends JFrame {
         JButton btnAdd = new JButton("Adicionar PDF");
         JButton btnRead = new JButton("Ler Selecionado");
         JButton btnDashboardButton = new JButton("Dashboard");
+        JButton btnRemove = new JButton("Remover Selecionado");
+
 
         // Ações dos botões (chamando o Controller)
         btnAdd.addActionListener(e -> {
@@ -69,6 +71,16 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Selecione um livro na tabela para ler.");
             }
         });
+        
+        btnRemove.addActionListener(e -> {
+            int selectedRow = bookTable.getSelectedRow();
+            if (selectedRow != -1) {
+                if (controller != null)
+                    controller.removeBook(selectedRow);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecione um livro na tabela para remover.");
+            }
+        });
 
         btnDashboardButton.addActionListener(e -> {
             if (controller != null) {
@@ -78,6 +90,7 @@ public class MainFrame extends JFrame {
 
         toolBar.add(btnAdd);
         toolBar.add(btnRead);
+        toolBar.add(btnRemove);
         toolBar.add(btnDashboardButton);
         
         // === Campo de Busca ===
@@ -100,7 +113,7 @@ public class MainFrame extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         // === Área Central (Lista de Livros) ===
-        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Início", "Página", "Total de Páginas", "Data Finalização" };
+        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Início", "Página", "Total de Páginas", "Finalização" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
