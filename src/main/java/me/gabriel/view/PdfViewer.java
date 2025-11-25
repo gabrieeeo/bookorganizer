@@ -31,7 +31,7 @@ public class PdfViewer extends JFrame {
     private volatile boolean isClosed = false;
 
     // Controles de visualização
-    private float zoomFactor = 1.35f;
+    private float zoomFactor = 1.5f;
 
     public PdfViewer(File pdfFile, int startPage) {
         setTitle("Leitor: " + pdfFile.getName());
@@ -48,11 +48,6 @@ public class PdfViewer extends JFrame {
                 protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException {
                     return new PageDrawer(parameters) {
                         public void drawPage(Graphics2D g, PDRectangle pageSize) throws IOException {
-                            Graphics2D g2d = (Graphics2D) g;
-                            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-                            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                            g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
                             super.drawPage(g, pageSize);
                         }
                     };
@@ -96,7 +91,7 @@ public class PdfViewer extends JFrame {
             try {
                 // Renderiza thumbnail pequena (largura ~100px)
                 BufferedImage thumb = renderer.renderImageWithDPI(i, 30); // 30 DPI é suficiente para thumbnail
-                int width = 100;
+                int width = 115;
                 int height = (int) (thumb.getHeight() * ((double) width / thumb.getWidth()));
                 Image scaled = thumb.getScaledInstance(width, height, Image.SCALE_SMOOTH);
                 thumbnailCache.put(i, new ImageIcon(scaled));

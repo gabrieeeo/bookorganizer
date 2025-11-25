@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -23,6 +24,7 @@ public class MainFrame extends JFrame {
     private LibraryController controller;
     private DefaultTableModel tableModel;
     private JTable bookTable;
+    private JTextField searchField;
 
     public MainFrame() {
         setTitle("Book Organizer");
@@ -76,6 +78,24 @@ public class MainFrame extends JFrame {
         toolBar.add(btnAdd);
         toolBar.add(btnRead);
         toolBar.add(btnDashboardButton);
+        
+        // === Campo de Busca ===
+        toolBar.addSeparator();
+        searchField = new JTextField(20);
+        JButton btnSearch = new JButton("Buscar");
+
+        btnSearch.addActionListener(e -> {
+            if(controller != null) {
+                controller.searchBooks(searchField.getText());
+            }
+        });
+
+        // Adiciona um listener para o campo de busca para buscar ao pressionar Enter
+        searchField.addActionListener(e -> btnSearch.doClick());
+
+        toolBar.add(searchField);
+        toolBar.add(btnSearch);
+
         add(toolBar, BorderLayout.NORTH);
 
         // === Área Central (Lista de Livros) ===

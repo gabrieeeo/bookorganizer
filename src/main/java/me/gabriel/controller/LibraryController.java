@@ -159,4 +159,20 @@ public class LibraryController {
         DashboardDialog dashboard = new DashboardDialog(view, stats);
         dashboard.setVisible(true);
     }
+
+    public void searchBooks(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            view.displayBooks(books); // Mostra todos os livros se a busca for vazia
+            return;
+        }
+
+        String lowerCaseQuery = query.toLowerCase();
+
+        List<BookModel> filteredBooks = books.stream()
+                .filter(book -> (book.getTitulo() != null && book.getTitulo().toLowerCase().contains(lowerCaseQuery)) ||
+                               (book.getAutor() != null && book.getAutor().toLowerCase().contains(lowerCaseQuery)))
+                .collect(Collectors.toList());
+
+        view.displayBooks(filteredBooks);
+    }
 }
