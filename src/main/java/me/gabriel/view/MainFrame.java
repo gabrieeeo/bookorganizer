@@ -17,6 +17,7 @@ import me.gabriel.model.BookModel;
 import me.gabriel.model.Status;
 
 import java.awt.BorderLayout;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class MainFrame extends JFrame {
@@ -99,7 +100,7 @@ public class MainFrame extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         // === Área Central (Lista de Livros) ===
-        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Início", "Página", "Total de Páginas" };
+        String[] columnNames = { "Status", "Título", "Autor", "Ano", "Categoria", "Início", "Página", "Total de Páginas", "Data Finalização" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -129,8 +130,16 @@ public class MainFrame extends JFrame {
     }
 
     public void addBookToView(BookModel book) {
+        Object dataFinalizacao = book.getDataFinalizacao() != null 
+            ? book.getDataFinalizacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) 
+            : ""; // Exibe string vazia se a data for nula
+
+            Object dataDeInicio = book.getInicio() != null 
+            ? book.getInicio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            : ""; // Exibe string vazia se a data for nula
+
         Object[] rowData = { book.getStatus(), book.getTitulo(), book.getAutor(), book.getAno(), book.getCategoria(),
-                book.getInicio(), book.getPaginaAtual() + 1, book.getTotalPages() };
+                dataDeInicio, book.getPaginaAtual() + 1, book.getTotalPages(), dataFinalizacao };
         tableModel.addRow(rowData);
     }
 

@@ -10,6 +10,7 @@ public class BookModel {
     private int ano;
     private String categoria;
     private LocalDate inicio;
+    private LocalDate dataFinalizacao;
     private String filePath; // ALTERADO de File para String
     private int paginaAtual;
     private int totalPages;
@@ -27,6 +28,7 @@ public class BookModel {
         this.paginaAtual = 0;
         this.totalPages = 0;
         this.inicio = LocalDate.now();
+        this.dataFinalizacao = null;
     }
 
     public Status getStatus() { return status; }
@@ -35,6 +37,7 @@ public class BookModel {
     public int getAno() { return ano; }
     public String getCategoria() { return categoria; }
     public LocalDate getInicio() { return inicio; }
+    public LocalDate getDataFinalizacao() { return dataFinalizacao; }
     public int getPaginaAtual() { return paginaAtual; }
     public int getTotalPages() { return totalPages; }
 
@@ -50,6 +53,7 @@ public class BookModel {
     public void setStatus(Status status) { this.status = status; }
     public void setTotalPages(int totalPages) { this.totalPages = totalPages; }
     public void setInicio(LocalDate inicio) { this.inicio = inicio; }
+    public void setDataFinalizacao(LocalDate dataFinalizacao) { this.dataFinalizacao = dataFinalizacao; }
 
     @Override
     public String toString() {

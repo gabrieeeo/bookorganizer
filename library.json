@@ -11,14 +11,15 @@
     "totalPages": 1180
   },
   {
-    "status": "LENDO",
+    "status": "LIDO",
     "titulo": "a",
     "autor": "a",
     "ano": 1,
     "categoria": "a",
     "inicio": "2025-11-24",
+    "dataFinalizacao": "2025-11-24",
     "filePath": "C:\\Users\\gabri\\Downloads\\Java Como Programar (Paul Deitel Harvey Deitel) (z-lib.org).pdf",
-    "paginaAtual": 1,
+    "paginaAtual": 32,
     "totalPages": 1180
   }
 ]

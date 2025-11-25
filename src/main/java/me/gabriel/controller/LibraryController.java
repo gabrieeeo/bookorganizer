@@ -145,8 +145,17 @@ public class LibraryController {
         if (index >= 0 && index < books.size()) {
             BookModel book = books.get(index);
             book.setStatus(newStatus);
+
+            // Adiciona ou remove a data de finalização baseada no status
+            if (newStatus == Status.LIDO) {
+                book.setDataFinalizacao(LocalDate.now());
+            } else {
+                book.setDataFinalizacao(null);
+            }
+
             System.out.println("Status atualizado para: " + newStatus.getDescricao());
             saveLibrary(); // SALVA A MUDANÇA DE STATUS
+            view.displayBooks(books); // Atualiza a view para exibir a data
         }
     }
 
